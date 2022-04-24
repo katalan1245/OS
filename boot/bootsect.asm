@@ -1,9 +1,11 @@
 [org 0x7c00]
 KERNEL_OFFSET equ 0x1000 ; The same offset we used when linking the kernel
 
-    mov [BOOT_DRIVE], dl ;  The BIOS sets us the boot drive in 'dl' on boot
+    mov [BOOT_DRIVE], dl ; The BIOS sets us the boot drive in 'dl' on boot
     mov bp, 0x9000
     mov sp, bp
+
+    call clear_screen
 
     mov bx, MSG_REAL_MODE
     call print
@@ -22,6 +24,8 @@ KERNEL_OFFSET equ 0x1000 ; The same offset we used when linking the kernel
 
 [bits 16]
 load_kernel:
+    call clear_screen
+    
     mov bx, MSG_LOAD_KERNEL
     call print
     call print_nl

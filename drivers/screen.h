@@ -26,9 +26,11 @@
 #define REG_SCREEN_CTRL 0x3d4
 #define REG_SCREEN_DATA 0x3d5
 
+#include <stdint.h>
+
 void clear_screen();
 void kprint(char *message);
 void kprint_at(char *message, int row, int col);
-unsigned char generate_text_color(int background_color, int foreground_color);
+uint8_t generate_text_color(int background_color, int foreground_color);
 
 #endif

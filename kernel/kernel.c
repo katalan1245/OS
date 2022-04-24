@@ -1,12 +1,14 @@
 #include "../drivers/screen.h"
+#include "../libc/cast.h"
 
 void main()
 {
     clear_screen();
-    kprint("OSDEV!");
-    // kprint("First Cursor Test");
-    // kprint_at("X", 15, 0);
-    // kprint_at("Line Overflowing", 10, 72);
-    // kprint_at("Line\nBreak", 5, 0);
-    // kprint_at("What will happen if there is no more space?", 24, 60);
+    int i = 0;
+    for (i = 0; i < 25; i++) {
+        char str[255];
+        itoa(i+1, str);
+        kprint_at(str, i, 0);
+    }
+    kprint("\nAnd with this text is a really long text. the kernel will scroll, and row 1 will disappear!");
 }

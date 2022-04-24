@@ -1,29 +1,27 @@
 #include "screen.h"
 #include "ports.h"
+#include "../libc/string.h"
+#include "../libc/cast.h"
 
 /* declaration of private functions */
 int get_cursor_offset();
 void set_cursor_offset(int offset);
 int print_char(char character, int row, int col, char attribute_byte);
-int get_offset(int row, int col);
+int handle_scrolling(int cursor_offset);
+int get_screen_offset(int row, int col);
 int get_offset_row(int offset);
 int get_offset_col(int offset);
 
-/***********************************************************************************************
- * Public Kernel API functions                                                                 *
- ***********************************************************************************************/
-
 /**
- * kernel print function 
+ * kernel print function
  * print the message on tspecific location
  */
 void kprint_at(char *message, int row, int col)
 {
     int offset;
     if (row >= 0 && col >= 0)
-    {
-        offset = get_offset(row, col);
-    }
+        offset = get_screen_offset(row, col);
+
     else
     {
         offset = get_cursor_offset();
@@ -44,33 +42,18 @@ void kprint_at(char *message, int row, int col)
  * kernel print function
  * print the message on the cursor location
  */
-void kprint(char *message)
-{
-    kprint_at(message, -1, -1);
-}
+void kprint(char *message) { kprint_at(message, -1, -1); }
 
 /**
- * clear the screen
+ * clear the screen and set the cursor to the begining of the screen
  */
 void clear_screen()
 {
     int i, j;
     for (int i = 0; i < MAX_ROWS; i++)
-    {
         for (int j = 0; j < MAX_COLS; j++)
-        {
             print_char(' ', i, j, generate_text_color(BLACK, WHITE));
-        }
-    }
-    set_cursor_offset(get_offset(0, 0));
-}
-
-/**
- * high 4-bits are for the background color
- * low 4-bits are for the foreground color
- */
-unsigned char generate_text_color(int background_color, int foreground_color) {
-    return (background_color << 4) + foreground_color;
+    set_cursor_offset(get_screen_offset(0, 0));
 }
 
 /**
@@ -81,44 +64,63 @@ unsigned char generate_text_color(int background_color, int foreground_color) {
  */
 int print_char(char character, int row, int col, char attribute_byte)
 {
-    unsigned char *vidmem = (unsigned char *)VIDEO_ADDRESS;
+    uint8_t *vidmem = (uint8_t *)VIDEO_ADDRESS;
     if (!attribute_byte)
-    {
         attribute_byte = generate_text_color(WHITE, BLACK);
-    }
 
     /* if coordinates greater than the max value print red E at the end of the screen*/
     if (row >= MAX_ROWS || col >= MAX_COLS)
     {
         vidmem[2 * (MAX_COLS) * (MAX_ROWS)-2] = 'E';
         vidmem[2 * (MAX_COLS) * (MAX_ROWS)-1] = generate_text_color(WHITE, RED);
-        return get_offset(row, col);
+        return get_screen_offset(row, col);
     }
 
     int offset;
     if (row >= 0 && col >= 0)
-    {
-        offset = get_offset(row, col);
-    }
+        offset = get_screen_offset(row, col);
+
     else
-    {
         offset = get_cursor_offset();
-    }
 
     if (character == '\n')
     {
-        int rows = offset / (2 * MAX_COLS);
-        offset = get_offset(rows, 79);
+        int row = get_offset_row(offset);
+        offset = get_screen_offset(row + 1, 0);
     }
     else
     {
-        vidmem[offset] = character;
-        vidmem[offset + 1] = attribute_byte;
+        vidmem[offset++] = character;
+        vidmem[offset++] = attribute_byte;
     }
-    offset += 2;
-    //offset = handle_scrolling(offset);
+    offset = handle_scrolling(offset);
     set_cursor_offset(offset);
     return offset;
+}
+
+/**
+ * handle scrolling by copying each line to a line above, and clear the last line
+ * returns the correct location of the cursor
+ */
+int handle_scrolling(int cursor_offset)
+{
+    if (cursor_offset < MAX_ROWS * MAX_COLS * 2)
+        return cursor_offset;
+
+    int i;
+    /* copy all the rows to one row above */
+    for (i = 1; i < MAX_ROWS; i++)
+        memcpy((char *)get_screen_offset(i - 1, 0) + VIDEO_ADDRESS, (char *)get_screen_offset(i, 0) + VIDEO_ADDRESS, MAX_COLS * 2);
+
+    /* clear last line by setting all the bytes to 0 */
+    char *last_line = (char *)get_screen_offset(MAX_ROWS - 1, 0) + VIDEO_ADDRESS;
+    for (i = 0; i < MAX_COLS * 2; i++)
+        last_line[i] = 0;
+
+    /* get back one row */
+    cursor_offset -= 2 * MAX_COLS;
+
+    return cursor_offset;
 }
 
 /* Use the VGA ports to get the current cursor position
@@ -137,18 +139,25 @@ int get_cursor_offset()
 /**
  * similar to get_cursor_offset, however this time we will write the data
  */
-void set_cursor_offset(int offset) {
+void set_cursor_offset(int offset)
+{
     offset /= 2;
     port_byte_out(REG_SCREEN_CTRL, 14);
-    port_byte_out(REG_SCREEN_DATA, (unsigned char)(offset >> 8));
+    port_byte_out(REG_SCREEN_DATA, (uint8_t)(offset >> 8));
     port_byte_out(REG_SCREEN_CTRL, 15);
-    port_byte_out(REG_SCREEN_DATA, (unsigned char)(offset & 0xff));
+    port_byte_out(REG_SCREEN_DATA, (uint8_t)(offset & 0xff));
 }
+
+/**
+ * high 4-bits are for the background color
+ * low 4-bits are for the foreground color
+ */
+uint8_t generate_text_color(int background_color, int foreground_color) { return (background_color << 4) + foreground_color; }
 
 /**
  * get the memory offset by row, col of the vga array
  */
-int get_offset(int row, int col) { return 2 * (row * MAX_COLS + col); }
+int get_screen_offset(int row, int col) { return 2 * (row * MAX_COLS + col); }
 
 /**
  * get the offset row
@@ -158,4 +167,4 @@ int get_offset_row(int offset) { return offset / (2 * MAX_COLS); }
 /**
  * get the offset col
  */
-int get_offset_col(int offset) { return (offset - (get_offset_row(offset)*2*MAX_COLS))/2; }
+int get_offset_col(int offset) { return (offset - (get_offset_row(offset) * 2 * MAX_COLS)) / 2; }
