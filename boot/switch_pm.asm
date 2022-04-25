@@ -5,7 +5,7 @@ switch_to_pm:
     mov eax, cr0
     or eax, 0x1 ; Set 32-bit mode bit in cr0
     mov cr0, eax
-    jmp CODE_SEG:init_pm ; Far jump by using different segment
+    jmp CODE_SEG:init_pm ; Far jump by using different segment to flush cpu pipeline
 
 [bits 32]
 init_pm:

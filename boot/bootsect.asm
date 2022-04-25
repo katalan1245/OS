@@ -1,11 +1,10 @@
+;
 [org 0x7c00]
 KERNEL_OFFSET equ 0x1000 ; The same offset we used when linking the kernel
 
     mov [BOOT_DRIVE], dl ; The BIOS sets us the boot drive in 'dl' on boot
     mov bp, 0x9000
     mov sp, bp
-
-    call clear_screen
 
     mov bx, MSG_REAL_MODE
     call print
@@ -48,6 +47,7 @@ BOOT_DRIVE db 0 ; It is a good idea to store it in memory because 'dl' may get o
 MSG_REAL_MODE db "Started in 16-bit Real Mode", 0
 MSG_PROT_MODE db "Landed in 32-bit Protected Mode", 0
 MSG_LOAD_KERNEL db "Loading kernel into memory", 0
+MSG_RETURNED_KERNEL db "Returned from kernel. Error?", 0
 
 ; padding
 times 510 - ($-$$) db 0

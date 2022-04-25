@@ -5,7 +5,7 @@ VIDEO_MEMORY equ 0xb8000
 WHITE_ON_GREEN equ 0x2f ; The color byte for each character
 ; Prints a null - terminated string pointed to by EDX
 print_string_pm:
-    pusha
+    pushad
     mov edx, VIDEO_MEMORY ; Set edx to the start of the video memory
 
 print_string_pm_loop:
@@ -21,5 +21,5 @@ print_string_pm_loop:
     jmp print_string_pm_loop
 
 print_pm_end:
-    popa
+    popad
     ret

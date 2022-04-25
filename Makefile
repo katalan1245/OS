@@ -1,7 +1,7 @@
 C_SOURCES = $(wildcard kernel/*.c drivers/*.c libc/*.c cpu/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h libc/*.c cpu/*.c)
+HEADERS = $(wildcard kernel/*.h drivers/*.h libc/*.h cpu/*.h)
 # Nice syntax for file extension replacement
-OBJ = ${C_SOURCES:.c=.o}
+OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o} 
 
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
 GDB = /usr/bin/gdb
