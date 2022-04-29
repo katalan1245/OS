@@ -33,7 +33,7 @@ isr_common_stub:
 
 ; Identical to ISR code except for the 'call' and the 'pop ebx'
 irq_common_stub:
-    pusha
+    pushad
     mov ax, ds
     push eax
     mov ax, 0x10
@@ -48,7 +48,7 @@ irq_common_stub:
     mov es, bx
     mov fs, bx
     mov gs, bx
-    popa
+    popad
     add esp, 8
     sti
     iret

@@ -64,7 +64,6 @@ void isr_install()
     /* restore masks */
     port_byte_out(PIC1_DATA, m1);
     port_byte_out(PIC2_DATA, m2);
-    
 
     /* install the IRQs */
     set_idt_gate(IRQ0, (uint32_t)irq0);
@@ -123,8 +122,7 @@ char *exception_messages[] = {
     "Reserved",
     "Reserved",
     "Reserved",
-    "Reserved"
-};
+    "Reserved"};
 
 void isr_handler(registers_t r)
 {
