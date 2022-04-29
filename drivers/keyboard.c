@@ -28,6 +28,8 @@ static void keyboard_callback(registers_t regs)
         return;
     if (scancode == BACKSPACE_SC)
     {
+        if(key_buffer[0] == '\0')
+            return;
         backspace(key_buffer);
         kprint_backspace();
     }
@@ -35,6 +37,7 @@ static void keyboard_callback(registers_t regs)
     {
         kprint("\n");
         user_input(key_buffer); /* kernel controlled function */
+        key_buffer[0] = '\0';
     }
     else
     {

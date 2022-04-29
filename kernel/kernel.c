@@ -13,7 +13,7 @@ void main()
 
 void user_input(char *input) {
     if(!strcmp(input, "HALT")) {
-        kprint("CPU HALTED!\n");
+        kprint("USER!! CPU HALTED!\n");
         asm volatile("hlt");
     }
 

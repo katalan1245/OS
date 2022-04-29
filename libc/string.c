@@ -16,9 +16,11 @@ void strcpy(char *destination, char *source) { memcpy(destination, source, strle
 
 int strcmp(char *str1, char *str2)
 {
-    while (*str1 && (*str1++ == *str2++))
-        ;
-    return *(unsigned char *)str1 - *(unsigned char *)str2;
+    int i;
+    for(i = 0; str1[i] == str2[i]; i++)
+        if(str1[i] == 0)
+            return 0;
+    return str1[i] - str2[i];
 }
 
 /**
