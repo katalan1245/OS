@@ -1,35 +1,35 @@
 #include "ports.h"
 
-uint8 port_byte_in(uint16 port)
+uint8_t port_byte_in(uint16_t port)
 {
-    uint8 result;
-    __asm__("in %%dx, %%al"
-            : "=a"(result)
-            : "d"(port));
+    uint8_t result;
+    asm("in %%dx, %%al"
+        : "=a"(result)
+        : "d"(port));
     return result;
 }
 
-void port_byte_out(uint16 port, uint8 data)
+void port_byte_out(uint16_t port, uint8_t data)
 {
-    __asm__("out %%al, %%dx"
-            :
-            : "a"(data), "d"(port));
+    asm volatile("out %%al, %%dx"
+                 :
+                 : "a"(data), "d"(port));
 }
 
-uint16 port_word_in(uint16 port)
+uint16_t port_word_in(uint16_t port)
 {
-    uint16 result;
-    __asm__("in %%dx, %%ax"
-            : "=a"(result)
-            : "d"(port));
+    uint16_t result;
+    asm("in %%dx, %%ax"
+        : "=a"(result)
+        : "d"(port));
     return result;
 }
 
-void port_short_out(uint8 port, uint16 data)
+void port_word_out(uint16_t port, uint16_t data)
 {
-    __asm__("out %%ax, %%dx"
-            :
-            : "a"(data), "d"(port));
+    asm volatile("out %%ax, %%dx"
+                 :
+                 : "a"(data), "d"(port));
 }
 
 void io_wait()

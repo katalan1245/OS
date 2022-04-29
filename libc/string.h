@@ -1,9 +1,10 @@
 #ifndef STRING_H
 #define STRING_H
 
-#include "../cpu/types.h"
+#include <stdint.h>
+#include <stddef.h>
 
-uint32 strlen(char *str);
+size_t strlen(char *str);
 void strcpy(char *str1, char *str2);
 void strrev(char *str);
 void backspace(char *str);

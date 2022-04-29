@@ -1,11 +1,13 @@
 #ifndef MEM_H
 #define MEM_H
 
-#include "../cpu/types.h"
+#include <stdint.h>
+#include <stddef.h>
 
-void memcpy(void *destination, void *source, uint32 n);
-void memset(void *mem, uint8 data, uint32 n);
-int memcmp(void *mem1, void *mem2, uint32 n);
-void memrev(void *mem, uint32 n);
+void memcpy(void *destination, void *source, size_t n);
+void memset(void *mem, uint8_t data, size_t n);
+int memcmp(void *mem1, void *mem2, size_t n);
+void memmove(void *destination, void *source, size_t n);
+void memrev(void *mem, size_t n);
 
 #endif

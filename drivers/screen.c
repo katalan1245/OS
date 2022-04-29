@@ -72,7 +72,7 @@ void clear_screen()
  */
 int print_char(char character, int row, int col, char attribute_byte)
 {
-    uint8 *vidmem = (uint8 *)VIDEO_ADDRESS;
+    uint8_t *vidmem = (uint8_t *)VIDEO_ADDRESS;
     if (!attribute_byte)
         attribute_byte = COLOR_ATTRIBUTE(WHITE, BLACK);
 
@@ -156,9 +156,9 @@ void set_cursor_offset(int offset)
 {
     offset /= 2;
     port_byte_out(REG_SCREEN_CTRL, 14);
-    port_byte_out(REG_SCREEN_DATA, (uint8)(offset >> 8));
+    port_byte_out(REG_SCREEN_DATA, (uint8_t)(offset >> 8));
     port_byte_out(REG_SCREEN_CTRL, 15);
-    port_byte_out(REG_SCREEN_DATA, (uint8)(offset & 0xff));
+    port_byte_out(REG_SCREEN_DATA, (uint8_t)(offset & 0xff));
 }
 
 /**

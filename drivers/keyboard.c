@@ -20,15 +20,15 @@ const char sc_ascii[] = {'?', '?', '1', '2', '3', '4', '5', '6',
                          'H', 'J', 'K', 'L', ';', '\'', '`', '?', '\\', 'Z', 'X', 'C', 'V',
                          'B', 'N', 'M', ',', '.', '/', '?', '?', '?', ' '};
 
-static void keyboard_callback(registers_t regs)
+static void keyboard_callback(registers_t *regs)
 {
-    uint8 scancode = port_byte_in(KEYBOARD_DATA_PORT);
+    uint8_t scancode = port_byte_in(KEYBOARD_DATA_PORT);
 
     if (scancode > SC_MAX)
         return;
     if (scancode == BACKSPACE_SC)
     {
-        if(key_buffer[0] == '\0')
+        if (key_buffer[0] == '\0')
             return;
         backspace(key_buffer);
         kprint_backspace();

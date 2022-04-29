@@ -1,9 +1,9 @@
 #include "string.h"
 #include "mem.h"
 
-uint32 strlen(char *str)
+size_t strlen(char *str)
 {
-    uint32 len = 0;
+    uint32_t len = 0;
     while (*(str + len++))
         ;
     return len - 1;
@@ -17,8 +17,8 @@ void strcpy(char *destination, char *source) { memcpy(destination, source, strle
 int strcmp(char *str1, char *str2)
 {
     int i;
-    for(i = 0; str1[i] == str2[i]; i++)
-        if(str1[i] == 0)
+    for (i = 0; str1[i] == str2[i]; i++)
+        if (str1[i] == 0)
             return 0;
     return str1[i] - str2[i];
 }
@@ -28,17 +28,19 @@ int strcmp(char *str1, char *str2)
  */
 void strrev(char *str) { memrev(str, strlen(str)); }
 
-void append(char *str, char n) {
-    uint32 len = strlen(str);
+void append(char *str, char n)
+{
+    size_t len = strlen(str);
     str[len] = n;
-    str[len+1] = '\0';
+    str[len + 1] = '\0';
 }
 
-void backspace(char *str) {
-    uint32 len = strlen(str);
-    if(len == 0)
+void backspace(char *str)
+{
+    size_t len = strlen(str);
+    if (len == 0)
         return;
-    str[len-1] = '\0';
+    str[len - 1] = '\0';
 }
 
 /**

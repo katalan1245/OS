@@ -2,18 +2,20 @@
 #include "../drivers/screen.h"
 #include "../libc/string.h"
 
-void main()
+void kernel_main()
 {
     clear_screen();
     isr_install();
     irq_install();
 
-    kprint("Type HALT to halt the cpu and kill the os\n> ");
+    kprint("Type HALT to halt the CPU\n> ");
 }
 
-void user_input(char *input) {
-    if(!strcmp(input, "HALT")) {
-        kprint("USER!! CPU HALTED!\n");
+void user_input(char *input)
+{
+    if (!strcmp(input, "HALT"))
+    {
+        kprint("CPU HALTED!\n");
         asm volatile("hlt");
     }
 
