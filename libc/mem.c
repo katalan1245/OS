@@ -3,9 +3,9 @@
 /**
  * copy the first n bytes from source to destination
  */
-void memcpy(void *destination, void *source, uint32_t n)
+void memcpy(void *destination, void *source, uint32 n)
 {
-    int i;
+    uint32 i;
     char *tdestination = (char *)destination;
     char *tsource = (char *)source;
     for (i = 0; i < n; i++)
@@ -15,9 +15,9 @@ void memcpy(void *destination, void *source, uint32_t n)
 /**
  * set `n` bytes in `destination` with `data`
  */
-void memset(void *destination, uint8_t data, uint32_t n)
+void memset(void *destination, uint8 data, uint32 n)
 {
-    uint8_t *temp = (uint8_t *)destination;
+    uint8 *temp = (uint8 *)destination;
     while (n--)
         *temp++ = data;
 }
@@ -25,10 +25,10 @@ void memset(void *destination, uint8_t data, uint32_t n)
 /**
  * compare the first n bytes of mem1 and mem2
  */
-int memcmp(void *mem1, void *mem2, uint32_t n)
+int memcmp(void *mem1, void *mem2, uint32 n)
 {
-    uint8_t *tmem1 = (uint8_t *)mem1;
-    uint8_t *tmem2 = (uint8_t *)mem2;
+    uint8 *tmem1 = (uint8 *)mem1;
+    uint8 *tmem2 = (uint8 *)mem2;
 
     while (n-- > 0)
         if (*tmem1++ != *tmem2++)
@@ -40,13 +40,13 @@ int memcmp(void *mem1, void *mem2, uint32_t n)
 /**
  * reverse first n bytes of the memory
  */
-void memrev(void *mem, uint32_t n)
+void memrev(void *mem, uint32 n)
 {
     int i = 0, j = n - 1;
-    uint8_t *tmem = (uint8_t *)mem;
+    uint8 *tmem = (uint8 *)mem;
     for (; i < j; i++, j--)
     {
-        uint8_t temp = tmem[i];
+        uint8 temp = tmem[i];
         tmem[i] = tmem[j];
         tmem[j] = temp;
     }

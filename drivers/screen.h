@@ -1,7 +1,7 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#include <stdint.h>
+#include "../cpu/types.h"
 
 #define VIDEO_ADDRESS 0xb8000
 #define MAX_ROWS 25
@@ -24,13 +24,17 @@
 #define YELLOW 14
 #define WHITE 15
 
+#define COLOR_ATTRIBUTE(background_color, foreground_color) ((background_color << 4) + foreground_color)
+
 /* screen device I/O ports */
 #define REG_SCREEN_CTRL 0x3d4
 #define REG_SCREEN_DATA 0x3d5
 
+#define BACKSPACE_CHAR 0x08
+
 void clear_screen();
 void kprint(char *message);
 void kprint_at(char *message, int row, int col);
-uint8_t generate_text_color(int background_color, int foreground_color);
+void kprint_backspace();
 
 #endif

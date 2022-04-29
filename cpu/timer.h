@@ -1,7 +1,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include <stdint.h>
+#include "types.h"
 
 #define SYSTEM_TIMER_FREQUENCY 100
 #define TIMER_COMMAND_PORT 0x43
@@ -17,6 +17,6 @@
  */
 #define COMMAND_BYTE 0x36
 
-void init_timer(uint32_t frequency);
+void init_timer(uint32 frequency);
 
 #endif

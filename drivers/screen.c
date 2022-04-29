@@ -1,7 +1,7 @@
 #include "screen.h"
-#include "ports.h"
+#include "../cpu/ports.h"
 #include "../libc/string.h"
-#include "../libc/cast.h"
+#include "../libc/mem.h"
 
 /* declaration of private functions */
 int get_cursor_offset();
@@ -32,7 +32,7 @@ void kprint_at(char *message, int row, int col)
     int i = 0;
     while (message[i])
     {
-        offset = print_char(message[i++], row, col, generate_text_color(BLACK, WHITE));
+        offset = print_char(message[i++], row, col, COLOR_ATTRIBUTE(BLACK, WHITE));
         row = get_offset_row(offset);
         col = get_offset_col(offset);
     }
@@ -44,15 +44,23 @@ void kprint_at(char *message, int row, int col)
  */
 void kprint(char *message) { kprint_at(message, -1, -1); }
 
+void kprint_backspace()
+{
+    int offset = get_cursor_offset();
+    int row = get_offset_row(offset);
+    int col = get_offset_col(offset);
+    print_char(BACKSPACE_CHAR, row, col, COLOR_ATTRIBUTE(BLACK, WHITE));
+}
+
 /**
  * clear the screen and set the cursor to the begining of the screen
  */
 void clear_screen()
 {
     int i, j;
-    for (int i = 0; i < MAX_ROWS; i++)
-        for (int j = 0; j < MAX_COLS; j++)
-            print_char(' ', i, j, generate_text_color(BLACK, WHITE));
+    for (i = 0; i < MAX_ROWS; i++)
+        for (j = 0; j < MAX_COLS; j++)
+            print_char(' ', i, j, COLOR_ATTRIBUTE(BLACK, WHITE));
     set_cursor_offset(get_screen_offset(0, 0));
 }
 
@@ -64,15 +72,15 @@ void clear_screen()
  */
 int print_char(char character, int row, int col, char attribute_byte)
 {
-    uint8_t *vidmem = (uint8_t *)VIDEO_ADDRESS;
+    uint8 *vidmem = (uint8 *)VIDEO_ADDRESS;
     if (!attribute_byte)
-        attribute_byte = generate_text_color(WHITE, BLACK);
+        attribute_byte = COLOR_ATTRIBUTE(WHITE, BLACK);
 
     /* if coordinates greater than the max value print red E at the end of the screen*/
     if (row >= MAX_ROWS || col >= MAX_COLS)
     {
         vidmem[2 * (MAX_COLS) * (MAX_ROWS)-2] = 'E';
-        vidmem[2 * (MAX_COLS) * (MAX_ROWS)-1] = generate_text_color(WHITE, RED);
+        vidmem[2 * (MAX_COLS) * (MAX_ROWS)-1] = COLOR_ATTRIBUTE(WHITE, RED);
         return get_screen_offset(row, col);
     }
 
@@ -87,6 +95,11 @@ int print_char(char character, int row, int col, char attribute_byte)
     {
         int row = get_offset_row(offset);
         offset = get_screen_offset(row + 1, 0);
+    }
+    else if (character == BACKSPACE_CHAR)
+    {
+        vidmem[offset] = ' ';
+        vidmem[offset + 1] = attribute_byte;
     }
     else
     {
@@ -143,16 +156,10 @@ void set_cursor_offset(int offset)
 {
     offset /= 2;
     port_byte_out(REG_SCREEN_CTRL, 14);
-    port_byte_out(REG_SCREEN_DATA, (uint8_t)(offset >> 8));
+    port_byte_out(REG_SCREEN_DATA, (uint8)(offset >> 8));
     port_byte_out(REG_SCREEN_CTRL, 15);
-    port_byte_out(REG_SCREEN_DATA, (uint8_t)(offset & 0xff));
+    port_byte_out(REG_SCREEN_DATA, (uint8)(offset & 0xff));
 }
-
-/**
- * high 4-bits are for the background color
- * low 4-bits are for the foreground color
- */
-uint8_t generate_text_color(int background_color, int foreground_color) { return (background_color << 4) + foreground_color; }
 
 /**
  * get the memory offset by row, col of the vga array

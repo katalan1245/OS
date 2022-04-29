@@ -1,12 +1,12 @@
 #ifndef PORTS_H
 #define PORTS_H
 
-#include <stdint.h>
+#include "types.h"
 
-uint8_t port_byte_in(uint16_t port);
-void port_byte_out(uint16_t port, uint8_t data);
-uint16_t port_word_int(uint16_t port);
-void port_word_out(uint16_t port, uint16_t data);
+uint8 port_byte_in(uint16 port);
+void port_byte_out(uint16 port, uint8 data);
+uint16 port_word_int(uint16 port);
+void port_word_out(uint16 port, uint16 data);
 void io_wait();
 
 #endif
