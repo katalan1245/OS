@@ -142,6 +142,9 @@ void add_interrupt_handler(uint8_t n, isr_t handler)
 
 void irq_handler(registers_t r)
 {
+    /* check for valid interrupt number */
+    if(r.int_no < MASTER_PIC_OFFSET || r.int_no > SLAVE_END_PIC_OFFSET)
+        return;
     /* After every interrupt we need to send an EOI to the PICs or they will not send another interrupt again */
     if (r.int_no >= SLAVE_PIC_OFFSET)
         port_byte_out(PIC2_COMMAND, PIC_EOI); /* Slave */

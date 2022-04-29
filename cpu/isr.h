@@ -5,6 +5,7 @@
 
 #define MASTER_PIC_OFFSET 0x20
 #define SLAVE_PIC_OFFSET 0x28
+#define SLAVE_END_PIC_OFFSET (SLAVE_PIC_OFFSET + 7)
 
 #define PIC1_COMMAND 0x20 /* IO base adderss for master PIC */
 #define PIC1_DATA (PIC1_COMMAND + 1)
