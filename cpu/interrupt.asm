@@ -1,4 +1,6 @@
+; Defined in isr.c
 [extern isr_handler]
+[extern irq_handler]
 
 ; This is our common ISR stub. It saves the processor state, sets
 ; up for kernel mode segments, calls the C-level fault handler,
@@ -7,7 +9,7 @@ isr_common_stub:
     ; Save CPU state
     pushad
     mov ax, ds
-    push eax
+    push eax    ; Save the data segment descriptor
 
     mov ax, 0x10 ; load the kernel data segment descriptor
     mov ds, ax
@@ -27,8 +29,30 @@ isr_common_stub:
     popad
     add esp, 8 ; Cleans up the pushed error code and ISR number
     sti
+    iret    ; Pops 5 things at once: CS, EIP, EFLAGS, SS and ESP
+
+; Identical to ISR code except for the 'call' and the 'pop ebx'
+irq_common_stub:
+    pusha
+    mov ax, ds
+    push eax
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    ; Call C handler
+    call irq_handler
+    pop ebx ; Different than the ISR code
+    mov ds, bx
+    mov es, bx
+    mov fs, bx
+    mov gs, bx
+    popa
+    add esp, 8
+    sti
     iret
-    
+ 
 ; We don't get information about which interrupt was caller
 ; when the handler is run, so we will need to have a different handler
 ; for every interrupt.
@@ -51,6 +75,15 @@ isr_common_stub:
         cli
         push byte %1
         jmp isr_common_stub
+%endmacro
+
+%macro IRQ 2
+    [global irq%1]
+    irq%1:
+        cli
+        push byte 0
+        push byte %2
+        jmp irq_common_stub
 %endmacro
 
 ISR_NOERRORCODE 0
@@ -85,3 +118,20 @@ ISR_NOERRORCODE 28
 ISR_NOERRORCODE 29
 ISR_NOERRORCODE 30
 ISR_NOERRORCODE 31
+
+IRQ   0,  32
+IRQ   1,  33
+IRQ   2,  34
+IRQ   3,  35
+IRQ   4,  36
+IRQ   5,  37
+IRQ   6,  38
+IRQ   7,  39
+IRQ   8,  40
+IRQ   9,  41
+IRQ  10,  42
+IRQ  11,  43
+IRQ  12,  44
+IRQ  13,  45
+IRQ  14,  46
+IRQ  15,  47
