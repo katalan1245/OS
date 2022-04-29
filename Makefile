@@ -6,7 +6,8 @@ OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
 GDB = /usr/bin/gdb
 # -g: Use debugging symbols in gcc
-CFLAGS = -g
+CFLAGS = -g -m32 -nostdlib -nostdinc -ffreestanding -fno-builtin -fno-pie -fno-stack-protector -nostartfiles -nodefaultlibs \
+		 -Wall -Wextra -Werror -c
 
 # First rule is run by default
 run: os-image.bin
@@ -32,7 +33,7 @@ debug: os-image.bin kernel.elf
 # Generic rules for wildcards
 # To make an object, always compile from its .c
 %.o: %.c ${HEADERS}
-	${CC} ${CFLAGS} -ffreestanding -fno-pie -c $< -o $@
+	${CC} ${CFLAGS} $< -o $@
 
 %.o: %.asm
 	nasm $< -f elf -o $@
