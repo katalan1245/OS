@@ -40,6 +40,7 @@ BEGIN_PM:
     mov ebx, MSG_PROT_MODE
     call print_string_pm
     call KERNEL_OFFSET ; Give control to the kernel
+    call clear_screen
     jmp $ ; Stay here when the kernel returns control to us (if ever)
 
 

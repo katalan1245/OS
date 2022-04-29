@@ -1,7 +1,7 @@
 #include "keyboard.h"
 #include "../cpu/isr.h"
 #include "../drivers/screen.h"
-#include "../drivers/ports.h"
+#include "../cpu/ports.h"
 #include "../libc/cast.h"
 
 void print_letter(uint8_t scancode);
